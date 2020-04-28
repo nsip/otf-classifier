@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/labstack/echo"
-	align "github.com/nsip/lpofai_classifier"
+	align "github.com/nsip/otf-classifier"
 	"log"
 	"net/http"
 )
