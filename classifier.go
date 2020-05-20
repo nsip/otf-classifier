@@ -1,6 +1,7 @@
 package align
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -12,6 +13,8 @@ import (
 	"github.com/nsip/curriculum-align/bayesian"
 	"gopkg.in/fatih/set.v0"
 )
+
+var granularity = "Indicator"
 
 type ClassifierType struct {
 	Classifier *bayesian.Classifier
@@ -49,8 +52,14 @@ type AlignmentType struct {
 	Item     string
 	Text     string
 	DevLevel string
+	Path     []*Keyval
 	Score    float64
 	Matches  []bayesian.MatchStruct
+}
+
+func keyval2path(path []*Keyval) string {
+	b, _ := json.Marshal(path)
+	return string(b)
 }
 
 func classify_text(classif ClassifierType, curriculum_map map[string]*CurricContent, input string) []AlignmentType {
@@ -61,6 +70,7 @@ func classify_text(classif ClassifierType, curriculum_map map[string]*CurricCont
 			Item:     string(classif.Classes[i]),
 			Text:     strings.Join(curriculum_map[string(classif.Classes[i])].Text, " "),
 			DevLevel: curriculum_map[string(classif.Classes[i])].DevLevel,
+			Path:     curriculum_map[string(classif.Classes[i])].Path,
 			Score:    scores1[i],
 			Matches:  matches[i]})
 	}
@@ -79,7 +89,7 @@ func Init() {
 		log.Fatalln(err)
 	}
 	for k, _ := range curriculum {
-		cl, err := train_curriculum(curriculum[k]["Indicator"])
+		cl, err := train_curriculum(curriculum[k][granularity])
 		if err != nil {
 			log.Fatalln(err)
 		} else {
@@ -103,6 +113,6 @@ func Align(c echo.Context) error {
 		c.String(http.StatusBadRequest, err.Error())
 		return err
 	}
-	response := classify_text(classifiers[learning_area], curriculum[learning_area]["Indicator"], text)
+	response := classify_text(classifiers[learning_area], curriculum[learning_area][granularity], text)
 	return c.JSONPretty(http.StatusOK, response, "  ")
 }
