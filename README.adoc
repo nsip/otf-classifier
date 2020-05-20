@@ -15,16 +15,19 @@ The web service is made available as a library (`Align()`); the `cmd` directory 
 
 The web service takes the following arguments:
 
-````
+[source,console]
+----
 GET http://localhost:1576/align?area=W&text=....
-````
+----
+
 where _area_ is the learning area (`Numeracy` or `Literacy`), and _text_ is the text to be aligned. Both the _text_ and the _area_ parameters are obligatory. 
 
 For example:
 
-````
+[source,console]
+----
 http://localhost:1576/align?area=Numeracy&text=information
-````
+----
 
 The response is a JSON list of structs, one for each curriculum standard that the service is configured for, with the following fields:
 
@@ -39,13 +42,15 @@ The response is a JSON list of structs, one for each curriculum standard that th
 The documents passed to the document classifier are also indexed, and can be queried through
 the web service `index`:
 
-````
+[source,console]
+----
 GET http://localhost:1576/index?search=word
-````
+----
 
 To use embedded in other labstack.echo webservers, replicate the `cmd/main.go` main() code:
 
-````
+[source,console]
+----
 align.Init()
 e := echo.New()
 e.GET("/align", align.Align)
@@ -58,7 +63,7 @@ e.GET("/index", func(c echo.Context) error {
                         return c.String(http.StatusOK, string(ret))
                 }
         })
-````
+----
 
 The web service is configured to read any JSON files in the `curricula` folder of the executable; the file included in the distribution is a mockup of the proposed machine encoding of the National Learning Progressions.
 
