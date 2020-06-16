@@ -112,6 +112,8 @@ build_linux32() {
 # TODO ARM
 # GOOS=linux GOARCH=arm GOARM=7 go build -o $CWD/build/LinuxArm7/go-nias/aggregator
 
+# go mod init github.com/nsip/otf-classifier
+
 if [ "$1" = "L32" ]
 then
     build_linux32
