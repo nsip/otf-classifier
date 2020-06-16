@@ -13,7 +13,7 @@ do_build() {
         go get
 	cd ./cmd
 	go get
-	GOOS="$GOOS" GOARCH="$GOARCH" go build -ldflags="$LDFLAGS" -o $OUTPUT/$HARNESS
+	CGO_ENABLED=0 GOOS="$GOOS" GOARCH="$GOARCH" go build -ldflags="$LDFLAGS" -o $OUTPUT/$HARNESS
 	cd ..
 	rsync -a cmd/curricula $OUTPUT/
 }
