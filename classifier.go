@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/http/httputil"
 	"sort"
 	"strings"
 
 	//"github.com/juliangruber/go-intersect"
 	"github.com/labstack/echo/v4"
 	"github.com/nsip/curriculum-align/bayesian"
-	"gopkg.in/fatih/set.v0"
+	set "gopkg.in/fatih/set.v0"
 )
 
 var granularity = "Indicator"
@@ -57,6 +58,18 @@ type AlignmentType struct {
 	Matches  []bayesian.MatchStruct
 }
 
+//
+// query params for classifier alignment
+// supports query-string, form and json payload inputs
+//
+// Area: LP Capabilty, currently Literacy or Numeracy
+// Text: the input to send to the classifier, such as observation or question text
+//
+type AlignmentQuery struct {
+	Area string `json:"area" form:"area" query:"area"`
+	Text string `json:"text" form:"text" query:"text"`
+}
+
 func keyval2path(path []*Keyval) string {
 	b, _ := json.Marshal(path)
 	return string(b)
@@ -99,15 +112,32 @@ func Init() {
 }
 
 func Align(c echo.Context) error {
-	var learning_area, text string
-	learning_area = c.QueryParam("area")
-	text = c.QueryParam("text")
-	log.Printf("Area: %s\nText: %s\n", learning_area, text)
-	if text == "" {
-		err := fmt.Errorf("text parameter not supplied")
-		c.String(http.StatusBadRequest, err.Error())
-		return err
+
+	//
+	// TODO: disable for production/release
+	// show the full inboud request
+	//
+	requestDump, err := httputil.DumpRequest(c.Request(), true)
+	if err != nil {
+		fmt.Println("req-dump error: ", err)
 	}
+	fmt.Println(string(requestDump))
+
+	var learning_area, text string
+
+	// check required params are in input
+	aq := &AlignmentQuery{}
+	if err := c.Bind(aq); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err)
+	}
+
+	if aq.Area == "" || aq.Text == "" {
+		fmt.Println("align query binding failed")
+		return echo.NewHTTPError(http.StatusBadRequest, "must supply values for area and text")
+	}
+
+	learning_area = strings.Title(aq.Area) // in case query param in all upper/lower
+	text = aq.Text
 	if learning_area != "Literacy" && learning_area != "Numeracy" {
 		err := fmt.Errorf("area parameter must be Literacy or Numeracy")
 		c.String(http.StatusBadRequest, err.Error())

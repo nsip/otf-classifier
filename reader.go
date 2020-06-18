@@ -3,11 +3,9 @@ package align
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"path/filepath"
-	"strings"
 )
 
 /* Learning Area; Indicator vs DevLevel; Indicator/DevLevel => { Text; DevLevel } */
@@ -43,17 +41,17 @@ func read_curriculum(path string) (Curriculum, error) {
 			path := make([]*Keyval, 0)
 			result := make(map[string]*CurricContent)
 			result = parse_lp(r, result, "", true, path)
-			for k, v := range result {
-				fmt.Printf("%s\t%s\n", k, strings.Join(v.Text, "; "))
-			}
+			// for k, v := range result {
+			// 	fmt.Printf("%s\t%s\n", k, strings.Join(v.Text, "; "))
+			// }
 			ret[key] = make(map[string]map[string]*CurricContent)
 			ret[key]["Indicator"] = result
 			result = make(map[string]*CurricContent)
 			path = make([]*Keyval, 0)
-			result = parse_lp(r, result, "", false, path)
-			for k, v := range result {
-				fmt.Printf("%s\t%s\n", k, strings.Join(v.Text, "; "))
-			}
+			// result = parse_lp(r, result, "", false, path)
+			// for k, v := range result {
+			// 	fmt.Printf("%s\t%s\n", k, strings.Join(v.Text, "; "))
+			// }
 			ret[key]["Devlevel"] = result
 		}
 	}
@@ -105,14 +103,14 @@ func parse_lp(r map[string]interface{}, result map[string]*CurricContent, devlev
 func dig(r map[string]interface{}, key1 string, key2 string) (string, error) {
 	l, ok := r[key1]
 	if !ok {
-		fmt.Printf("%+v", r)
-		fmt.Println("Fail 1 " + key1)
+		// fmt.Printf("%+v", r)
+		// fmt.Println("Fail 1 " + key1)
 		return "", errors.New("missing")
 	}
 	m, ok := l.(map[string]interface{})[key2]
 	if !ok {
-		fmt.Printf("%+v", l)
-		fmt.Printf("Fail 2 " + key2)
+		// fmt.Printf("%+v", l)
+		// fmt.Printf("Fail 2 " + key2)
 		return "", errors.New("missing")
 	}
 	return m.(string), nil
