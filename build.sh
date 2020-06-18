@@ -13,7 +13,7 @@ do_build() {
         go get
 	cd ./cmd
 	go get
-	GOOS="$GOOS" GOARCH="$GOARCH" go build -ldflags="$LDFLAGS" -o $OUTPUT/$HARNESS
+	CGO_ENABLED=0 GOOS="$GOOS" GOARCH="$GOARCH" go build -ldflags="$LDFLAGS" -o $OUTPUT/$HARNESS
 	cd ..
 	rsync -a cmd/curricula $OUTPUT/
 }
@@ -111,6 +111,8 @@ build_linux32() {
 
 # TODO ARM
 # GOOS=linux GOARCH=arm GOARM=7 go build -o $CWD/build/LinuxArm7/go-nias/aggregator
+
+# go mod init github.com/nsip/otf-classifier
 
 if [ "$1" = "L32" ]
 then

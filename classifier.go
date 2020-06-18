@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	//"github.com/juliangruber/go-intersect"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 	"github.com/nsip/curriculum-align/bayesian"
 	"gopkg.in/fatih/set.v0"
 )
@@ -27,7 +27,7 @@ var curriculum Curriculum
 // create a classifier specific to components of the curriculum
 func train_curriculum(curriculum map[string]*CurricContent) (ClassifierType, error) {
 	classes := make([]bayesian.Class, 0)
-	class_set := set.New()
+	class_set := set.New(set.ThreadSafe)
 	for key, _ := range curriculum {
 		classes = append(classes, bayesian.Class(key))
 		class_set.Add(key)
