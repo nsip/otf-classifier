@@ -3,6 +3,8 @@ Web service to align free text to the learning progressions text as document cla
 
 NOTE: This is experimental and proof-of-concept code
 
+NOTE: Project has moved to go modules, remember to export GO111MODULE=on for go get and go build if you are working without module support as default.
+
 This code is based on https://github.com/nsip/curriculum-align[]. It puts in place a document classifier
 (https://en.wikipedia.org/wiki/Tf–idf[]) to classify arbitrary text as aligning to the learning progressions
 the code is provisioned with, and outputting the alignments as a web service.
