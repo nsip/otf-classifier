@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"net/http/httputil"
 	"sort"
 	"strings"
 
@@ -117,22 +116,22 @@ func Align(c echo.Context) error {
 	// TODO: disable for production/release
 	// show the full inboud request
 	//
-	requestDump, err := httputil.DumpRequest(c.Request(), true)
-	if err != nil {
-		fmt.Println("req-dump error: ", err)
-	}
-	fmt.Println(string(requestDump))
+	// requestDump, err := httputil.DumpRequest(c.Request(), true)
+	// if err != nil {
+	// fmt.Println("req-dump error: ", err)
+	// }
+	// fmt.Println(string(requestDump))
 
 	var learning_area, text string
 
 	// check required params are in input
 	aq := &AlignmentQuery{}
 	if err := c.Bind(aq); err != nil {
+		fmt.Println("align query binding failed")
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 
 	if aq.Area == "" || aq.Text == "" {
-		fmt.Println("align query binding failed")
 		return echo.NewHTTPError(http.StatusBadRequest, "must supply values for area and text")
 	}
 
