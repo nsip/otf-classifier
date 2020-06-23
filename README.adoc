@@ -1,4 +1,4 @@
-= lpofai_classifier
+= otf-classifier
 Web service to align free text to the learning progressions text as document classification
 
 NOTE: This is experimental and proof-of-concept code
@@ -30,6 +30,12 @@ For example:
 ----
 http://localhost:1576/align?area=Numeracy&text=information
 ----
+
+For larger payloads or automated environments calling the classifier, an equivalent POST method is also avialable which will accept a JSON payload:
+[source,console]
+-----
+curl http://localhost:1576/align -H 'Content-Type: application/json' -d'{"area":"literacy","text":"confident sentences"}'
+-----
 
 The response is a JSON list of structs, one for each curriculum standard that the service is configured for, with the following fields:
 
