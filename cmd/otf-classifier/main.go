@@ -29,13 +29,21 @@ func main() {
 
 	e.POST("/align", align.Align) // needs to be available as post to support json payloads
 	e.GET("/align", align.Align)
+	e.GET("/lookup", func(c echo.Context) error {
+		query := c.QueryParam("search")
+		ret, err := align.Lookup(query)
+		if err != nil {
+			return c.String(http.StatusNotFound, err.Error())
+		}
+		return c.JSONPretty(http.StatusOK, ret, "  ")
+	})
 	e.GET("/index", func(c echo.Context) error {
 		query := c.QueryParam("search")
 		ret, err := align.Search(query)
 		if err != nil {
 			return err
 		}
-		return c.String(http.StatusOK, string(ret))
+		return c.JSONPretty(http.StatusOK, ret, "  ")
 	})
 
 	// log.Println("Editor: localhost:1576")

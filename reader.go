@@ -48,7 +48,7 @@ func read_curriculum(path string) (Curriculum, error) {
 			ret[key]["Indicator"] = result
 			result = make(map[string]*CurricContent)
 			path = make([]*Keyval, 0)
-			// result = parse_lp(r, result, "", false, path)
+			result = parse_lp(r, result, "", false, path) // needed for lookup
 			// for k, v := range result {
 			// 	fmt.Printf("%s\t%s\n", k, strings.Join(v.Text, "; "))
 			// }
@@ -82,6 +82,7 @@ func parse_lp(r map[string]interface{}, result map[string]*CurricContent, devlev
 		var key string
 		if indicator {
 			key = r["id"].(string)
+			// TODO key = name in production version of MR NLNLPs
 		} else {
 			key = devlevel
 		}
@@ -91,10 +92,22 @@ func parse_lp(r map[string]interface{}, result map[string]*CurricContent, devlev
 		result[key].Text = append(result[key].Text, r["text"].(string))
 	}
 
+	if l == "Indicator" && indicator || l == "Progression Level" && !indicator {
+		id := r["id"].(string)
+		result[id] = &CurricContent{Text: make([]string, 0), DevLevel: devlevel, Path: path}
+		result[id].Text = append(result[id].Text, r["text"].(string))
+	}
+
 	c, ok := r["children"]
 	if ok {
+		orig_path := path
 		for _, r1 := range c.([]interface{}) {
 			result = parse_lp(r1.(map[string]interface{}), result, devlevel, indicator, path)
+		}
+		if l == "Progression Level" && !indicator {
+			id := r["id"].(string)
+			result[id].Path = orig_path
+			result[devlevel].Path = orig_path
 		}
 	}
 	return result
