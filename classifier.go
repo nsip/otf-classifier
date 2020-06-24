@@ -145,3 +145,23 @@ func Align(c echo.Context) error {
 	response := classify_text(classifiers[learning_area], curriculum[learning_area][granularity], text)
 	return c.JSONPretty(http.StatusOK, response, "  ")
 }
+
+func Keys(m map[string]*CurricContent) (keys []string) {
+	for k := range m {
+		keys = append(keys, k)
+	}
+	return keys
+}
+
+func Lookup(query string) (interface{}, error) {
+	//log.Printf("%+v\n", curriculum["Numeracy"]["Progression Level"]["CPr6"])
+	for k, _ := range curriculum {
+		for level, _ := range curriculum[k] {
+			//log.Printf("%s\t%s\t%+v\n", k, curriculum, curriculum[k][level])
+			if ret, ok := curriculum[k][level][query]; ok {
+				return ret.Path, nil
+			}
+		}
+	}
+	return nil, fmt.Errorf("No such string found")
+}
