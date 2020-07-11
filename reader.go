@@ -3,11 +3,12 @@ package align
 import (
 	"encoding/json"
 	"errors"
-	"github.com/grokify/html-strip-tags-go"
 	"io/ioutil"
 	"log"
 	"path/filepath"
 	"strings"
+
+	strip "github.com/grokify/html-strip-tags-go"
 )
 
 /* Learning Area; Indicator vs DevLevel; Indicator/DevLevel => { Text; DevLevel } */
@@ -53,13 +54,13 @@ func read_curriculum(path string) (Curriculum, error) {
 		result = parse_lp(r, result, "", false, path) // needed for lookup
 		ret[key]["Devlevel"] = result
 	}
-	for i := range ret {
-		for j := range ret[i] {
-			for k, v := range ret[i][j] {
-				log.Printf("%s: %s: %s: %+v\n", i, j, k, v)
-			}
-		}
-	}
+	// for i := range ret {
+	// 	for j := range ret[i] {
+	// 		for k, v := range ret[i][j] {
+	// 			log.Printf("%s: %s: %s: %+v\n", i, j, k, v)
+	// 		}
+	// 	}
+	// }
 	return ret, nil
 }
 
