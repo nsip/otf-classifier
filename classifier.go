@@ -35,6 +35,7 @@ func train_curriculum(curriculum map[string]*CurricContent) (ClassifierType, err
 	if len(classes) < 2 {
 		return ClassifierType{}, fmt.Errorf("Not enough matching curriculum statements for classification")
 	}
+	// log.Printf("Training on: %+v\n", classes)
 	classifier := bayesian.NewClassifierTfIdf(classes...)
 	for key, record := range curriculum {
 		if !class_set.Has(key) {
@@ -76,8 +77,12 @@ func keyval2path(path []*Keyval) string {
 
 func classify_text(classif ClassifierType, curriculum_map map[string]*CurricContent, input string) []AlignmentType {
 	scores1, matches, _, _ := classif.Classifier.LogScores(Tokenise("", input, nil))
+	maxResults := 5 // limit results set
+	if len(scores1) < maxResults {
+		maxResults = len(scores1)
+	}
 	response := make([]AlignmentType, 0)
-	for i := 0; i < len(scores1); i++ {
+	for i := 0; i < maxResults; i++ {
 		response = append(response, AlignmentType{
 			Item:     string(classif.Classes[i]),
 			Text:     strings.Join(curriculum_map[string(classif.Classes[i])].Text, " "),
@@ -112,13 +117,13 @@ func Init() {
 
 func Align(c echo.Context) error {
 
-	//
-	// TODO: disable for production/release
-	// show the full inboud request
-	//
+	// //
+	// // TODO: disable for production/release
+	// // show the full inboud request
+	// //
 	// requestDump, err := httputil.DumpRequest(c.Request(), true)
 	// if err != nil {
-	// fmt.Println("req-dump error: ", err)
+	// 	fmt.Println("req-dump error: ", err)
 	// }
 	// fmt.Println(string(requestDump))
 
@@ -143,7 +148,7 @@ func Align(c echo.Context) error {
 		return err
 	}
 	response := classify_text(classifiers[learning_area], curriculum[learning_area][granularity], text)
-	return c.JSONPretty(http.StatusOK, response, "  ")
+	return c.JSON(http.StatusOK, response)
 }
 
 func Keys(m map[string]*CurricContent) (keys []string) {
@@ -159,6 +164,7 @@ func Lookup(query string) (interface{}, error) {
 		for level, _ := range curriculum[k] {
 			//log.Printf("%s\t%s\t%+v\n", k, curriculum, curriculum[k][level])
 			if ret, ok := curriculum[k][level][query]; ok {
+				// fmt.Printf("\nret:%+v\n\n", ret)
 				return ret.Path, nil
 			}
 		}
