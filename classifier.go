@@ -35,6 +35,7 @@ func train_curriculum(curriculum map[string]*CurricContent) (ClassifierType, err
 	if len(classes) < 2 {
 		return ClassifierType{}, fmt.Errorf("Not enough matching curriculum statements for classification")
 	}
+	log.Printf("Training on: %+v\n", classes)
 	classifier := bayesian.NewClassifierTfIdf(classes...)
 	for key, record := range curriculum {
 		if !class_set.Has(key) {
@@ -75,6 +76,7 @@ func keyval2path(path []*Keyval) string {
 }
 
 func classify_text(classif ClassifierType, curriculum_map map[string]*CurricContent, input string) []AlignmentType {
+	log.Printf("%+v", classif)
 	scores1, matches, _, _ := classif.Classifier.LogScores(Tokenise("", input, nil))
 	response := make([]AlignmentType, 0)
 	for i := 0; i < len(scores1); i++ {

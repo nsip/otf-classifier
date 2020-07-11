@@ -3,9 +3,11 @@ package align
 import (
 	"encoding/json"
 	"errors"
+	"github.com/grokify/html-strip-tags-go"
 	"io/ioutil"
 	"log"
 	"path/filepath"
+	"strings"
 )
 
 /* Learning Area; Indicator vs DevLevel; Indicator/DevLevel => { Text; DevLevel } */
@@ -22,7 +24,7 @@ type Keyval struct {
 }
 
 func read_curriculum(path string) (Curriculum, error) {
-	var lp []map[string]interface{}
+	var r map[string]interface{}
 	files, _ := filepath.Glob(path + "/*.json")
 	if len(files) == 0 {
 		log.Fatalln("No *.json curriculum files found in input folder" + path)
@@ -34,25 +36,28 @@ func read_curriculum(path string) (Curriculum, error) {
 		if err != nil {
 			return ret, err
 		}
-		json.Unmarshal([]byte(dat), &lp)
-		// fmt.Printf("%+v\n", lp)
-		for _, r := range lp {
-			key := r["text"].(string)
-			path := make([]*Keyval, 0)
-			result := make(map[string]*CurricContent)
-			result = parse_lp(r, result, "", true, path)
-			// for k, v := range result {
-			// 	fmt.Printf("%s\t%s\n", k, strings.Join(v.Text, "; "))
-			// }
-			ret[key] = make(map[string]map[string]*CurricContent)
-			ret[key]["Indicator"] = result
-			result = make(map[string]*CurricContent)
-			path = make([]*Keyval, 0)
-			result = parse_lp(r, result, "", false, path) // needed for lookup
-			// for k, v := range result {
-			// 	fmt.Printf("%s\t%s\n", k, strings.Join(v.Text, "; "))
-			// }
-			ret[key]["Devlevel"] = result
+		json.Unmarshal(dat, &r)
+		key := r["text"].(string)
+		if key == "National Literacy Learning Progression" {
+			key = "Literacy"
+		} else if key == "National Numeracy Learning Progression" {
+			key = "Numeracy"
+		}
+		path := make([]*Keyval, 0)
+		result := make(map[string]*CurricContent)
+		result = parse_lp(r, result, "", true, path)
+		ret[key] = make(map[string]map[string]*CurricContent)
+		ret[key]["Indicator"] = result
+		result = make(map[string]*CurricContent)
+		path = make([]*Keyval, 0)
+		result = parse_lp(r, result, "", false, path) // needed for lookup
+		ret[key]["Devlevel"] = result
+	}
+	for i := range ret {
+		for j := range ret[i] {
+			for k, v := range ret[i][j] {
+				log.Printf("%s: %s: %s: %+v\n", i, j, k, v)
+			}
 		}
 	}
 	return ret, nil
@@ -61,41 +66,42 @@ func read_curriculum(path string) (Curriculum, error) {
 func parse_lp(r map[string]interface{}, result map[string]*CurricContent, devlevel string, indicator bool, path []*Keyval) map[string]*CurricContent {
 	l, err := dig(r, "asn_statementLabel", "literal")
 	if err != nil {
-		return result
+		// root does not have a label
+		l = "General Capability"
 	}
 
 	name, err := dig(r, "asn_statementNotation", "literal")
 	ok := true
 	if err != nil {
-		name, ok = r["text"].(string)
+		name, ok = r["id"].(string)
 		if !ok {
-			name, ok = r["id"].(string)
+			name, ok = r["text"].(string)
 		}
 	}
+
 	path = append(path, &Keyval{Key: l, Val: name})
 
-	if l == "Progression Level" {
+	if l == "Progression level" {
 		devlevel = name
 	}
 
 	if l == "Indicator" {
 		var key string
 		if indicator {
-			key = r["id"].(string)
-			// TODO key = name in production version of MR NLNLPs
+			key = name
 		} else {
 			key = devlevel
 		}
 		if _, ok := result[key]; !ok {
 			result[key] = &CurricContent{Text: make([]string, 0), DevLevel: devlevel, Path: path}
 		}
-		result[key].Text = append(result[key].Text, r["text"].(string))
+		result[key].Text = append(result[key].Text, strings.TrimSpace(strip.StripTags(r["text"].(string))))
 	}
 
-	if l == "Indicator" && indicator || l == "Progression Level" && !indicator {
-		id := r["id"].(string)
+	if l == "Indicator" && indicator || l == "Progression level" && !indicator {
+		id := name
 		result[id] = &CurricContent{Text: make([]string, 0), DevLevel: devlevel, Path: path}
-		result[id].Text = append(result[id].Text, r["text"].(string))
+		result[id].Text = append(result[id].Text, strings.TrimSpace(strip.StripTags(r["text"].(string))))
 	}
 
 	c, ok := r["children"]
@@ -104,8 +110,8 @@ func parse_lp(r map[string]interface{}, result map[string]*CurricContent, devlev
 		for _, r1 := range c.([]interface{}) {
 			result = parse_lp(r1.(map[string]interface{}), result, devlevel, indicator, path)
 		}
-		if l == "Progression Level" && !indicator {
-			id := r["id"].(string)
+		if l == "Progression level" && !indicator {
+			id := name
 			result[id].Path = orig_path
 			result[devlevel].Path = orig_path
 		}
