@@ -159,12 +159,10 @@ func Keys(m map[string]*CurricContent) (keys []string) {
 }
 
 func Lookup(query string) (interface{}, error) {
-	//log.Printf("%+v\n", curriculum["Numeracy"]["Progression Level"]["CPr6"])
 	for k, _ := range curriculum {
 		for level, _ := range curriculum[k] {
-			//log.Printf("%s\t%s\t%+v\n", k, curriculum, curriculum[k][level])
+			//log.Printf("%s\t%s\t%+v\n", k, level, curriculum[k][level])
 			if ret, ok := curriculum[k][level][query]; ok {
-				// fmt.Printf("\nret:%+v\n\n", ret)
 				return ret.Path, nil
 			}
 		}

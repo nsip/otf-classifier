@@ -3,6 +3,9 @@ package align
 import (
 	"encoding/json"
 	"errors"
+
+	"github.com/grokify/html-strip-tags-go"
+	"github.com/mitchellh/copystructure"
 	"io/ioutil"
 	"log"
 	"path/filepath"
@@ -54,17 +57,10 @@ func read_curriculum(path string) (Curriculum, error) {
 		result = parse_lp(r, result, "", false, path) // needed for lookup
 		ret[key]["Devlevel"] = result
 	}
-	// for i := range ret {
-	// 	for j := range ret[i] {
-	// 		for k, v := range ret[i][j] {
-	// 			log.Printf("%s: %s: %s: %+v\n", i, j, k, v)
-	// 		}
-	// 	}
-	// }
 	return ret, nil
 }
 
-func parse_lp(r map[string]interface{}, result map[string]*CurricContent, devlevel string, indicator bool, path []*Keyval) map[string]*CurricContent {
+func parse_lp(r map[string]interface{}, result map[string]*CurricContent, devlevel string, indicator bool, path_input []*Keyval) map[string]*CurricContent {
 	l, err := dig(r, "asn_statementLabel", "literal")
 	if err != nil {
 		// root does not have a label
@@ -80,6 +76,11 @@ func parse_lp(r map[string]interface{}, result map[string]*CurricContent, devlev
 		}
 	}
 
+	raw, err := copystructure.Copy(path_input)
+	if err != nil {
+		panic(err)
+	}
+	path := raw.([]*Keyval)
 	path = append(path, &Keyval{Key: l, Val: name})
 
 	if l == "Progression level" {
@@ -107,7 +108,11 @@ func parse_lp(r map[string]interface{}, result map[string]*CurricContent, devlev
 
 	c, ok := r["children"]
 	if ok {
-		orig_path := path
+		raw, err := copystructure.Copy(path)
+		if err != nil {
+			panic(err)
+		}
+		orig_path := raw.([]*Keyval)
 		for _, r1 := range c.([]interface{}) {
 			result = parse_lp(r1.(map[string]interface{}), result, devlevel, indicator, path)
 		}
