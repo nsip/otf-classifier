@@ -35,7 +35,7 @@ func main() {
 		if err != nil {
 			return c.String(http.StatusNotFound, err.Error())
 		}
-		return c.JSONPretty(http.StatusOK, ret, "  ")
+		return c.JSON(http.StatusOK, ret)
 	})
 	e.GET("/index", func(c echo.Context) error {
 		query := c.QueryParam("search")
@@ -43,7 +43,7 @@ func main() {
 		if err != nil {
 			return err
 		}
-		return c.JSONPretty(http.StatusOK, ret, "  ")
+		return c.JSON(http.StatusOK, ret)
 	})
 
 	// log.Println("Editor: localhost:1576")
