@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/grokify/html-strip-tags-go"
-	"github.com/mitchellh/copystructure"
 	"io/ioutil"
 	"log"
 	"path/filepath"
 	"strings"
+
+	"github.com/mitchellh/copystructure"
 
 	strip "github.com/grokify/html-strip-tags-go"
 )
