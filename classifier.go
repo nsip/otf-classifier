@@ -1,4 +1,4 @@
-package align
+package otfclassifier
 
 import (
 	"encoding/json"
@@ -8,9 +8,8 @@ import (
 	"sort"
 	"strings"
 
-	//"github.com/juliangruber/go-intersect"
 	"github.com/labstack/echo/v4"
-	"github.com/nsip/curriculum-align/bayesian"
+	"github.com/nsip/otf-classifier/bayesian"
 	set "gopkg.in/fatih/set.v0"
 )
 
@@ -22,6 +21,7 @@ type ClassifierType struct {
 }
 
 var classifiers map[string]ClassifierType
+
 var curriculum Curriculum
 
 // create a classifier specific to components of the curriculum
@@ -77,12 +77,8 @@ func keyval2path(path []*Keyval) string {
 
 func classify_text(classif ClassifierType, curriculum_map map[string]*CurricContent, input string) []AlignmentType {
 	scores1, matches, _, _ := classif.Classifier.LogScores(Tokenise("", input, nil))
-	maxResults := 5 // limit results set
-	if len(scores1) < maxResults {
-		maxResults = len(scores1)
-	}
 	response := make([]AlignmentType, 0)
-	for i := 0; i < maxResults; i++ {
+	for i := 0; i < len(scores1); i++ {
 		response = append(response, AlignmentType{
 			Item:     string(classif.Classes[i]),
 			Text:     strings.Join(curriculum_map[string(classif.Classes[i])].Text, " "),
@@ -92,7 +88,7 @@ func classify_text(classif ClassifierType, curriculum_map map[string]*CurricCont
 			Matches:  matches[i]})
 	}
 	sort.Slice(response, func(i, j int) bool { return response[i].Score > response[j].Score })
-	return response
+	return response[:5]
 }
 
 func Init() {
@@ -113,6 +109,7 @@ func Init() {
 			classifiers[k] = cl
 		}
 	}
+	// log.Printf("model training complete")
 }
 
 func Align(c echo.Context) error {

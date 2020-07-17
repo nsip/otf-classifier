@@ -1,4 +1,4 @@
-package align
+package otfclassifier
 
 import (
 	"encoding/json"

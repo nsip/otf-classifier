@@ -1,10 +1,11 @@
-package align
+package otfclassifier
 
 import (
 	"encoding/json"
+	"log"
+
 	"github.com/blevesearch/bleve"
 	"github.com/blevesearch/bleve/mapping"
-	"log"
 )
 
 var m *mapping.IndexMappingImpl
