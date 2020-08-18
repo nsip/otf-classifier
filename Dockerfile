@@ -2,8 +2,8 @@
 # INSTRUCTIONS
 ############################
 # BUILD: docker build -t nsip/otf-classifier:develop .
-# TEST: docker run -it -p3000:3000 nsip/otf-classifier:develop .
-# RUN: docker run -d -p3000:3000 nsip/otf-classifie:developr
+# TEST: docker run -it -p1576:1576 nsip/otf-classifier:develop .
+# RUN: docker run -d -p1576:1576 nsip/otf-classifie:developr
 #
 ###########################
 # DOCUMENTATION
@@ -32,5 +32,10 @@ FROM debian:stretch
 COPY --from=builder /go/bin/server /go/bin/server
 # NOTE - make sure it is the last build that still copies the files
 COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-WORKDIR /go/bin
+COPY --from=builder /build/cmd/otf-classifier/curricula/* /data/curricula/
+WORKDIR /data
 CMD ["/go/bin/server"]
+
+
+
+
