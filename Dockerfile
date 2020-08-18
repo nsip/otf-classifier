@@ -1,9 +1,9 @@
 ###########################
 # INSTRUCTIONS
 ############################
-# BUILD: docker build -t nsip/otf-classifier .
-# TEST: docker run -it -p3000:3000 nsip/otf-classifier .
-# RUN: docker run -d -p3000:3000 nsip/otf-classifier
+# BUILD: docker build -t nsip/otf-classifier:develop .
+# TEST: docker run -it -p3000:3000 nsip/otf-classifier:develop .
+# RUN: docker run -d -p3000:3000 nsip/otf-classifie:developr
 #
 ###########################
 # DOCUMENTATION
