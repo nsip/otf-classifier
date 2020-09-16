@@ -2,6 +2,7 @@
 # INSTRUCTIONS
 ############################
 # BUILD
+#   Confirm v0.1.0 tag has been commited to master, and checkout at that point
 #	docker build -t nsip/otf-classifier:latest -t nsip/otf-classifier:v0.1.0 .
 # TEST: docker run -it -v $PWD/test/data:/data -v $PWD/test/config.json:/config.json nsip/otf-classifier:develop .
 # RUN: docker run -d nsip/otf-classifier:develop
@@ -24,7 +25,7 @@
 ###########################
 # STEP 0 Get them certificates
 ############################
-# (note, step 2 is using alpine now) 
+# (note, step 2 is using alpine now)
 # FROM alpine:latest as certs
 
 ############################
@@ -47,5 +48,6 @@ RUN go build -o /build/app
 FROM alpine
 COPY --from=builder /build/app /app
 # NOTE - make sure it is the last build that still copies the files
-COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 CMD ["./app"]
+WORKDIR /
+ENTRYPOINT ["./app"]

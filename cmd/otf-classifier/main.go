@@ -1,7 +1,7 @@
 package main
 
 import (
-	"flag"
+	"github.com/namsral/flag"
 	"fmt"
 	"net/http"
 	"os"
@@ -13,9 +13,11 @@ import (
 
 func main() {
 
-	port := flag.Int("p", 1576, "port to run this server on")
+    // TODO: Support ENV port
+	port := flag.Int("port", 1576, "port to run this server on")
 	flag.Parse()
 
+    // TODO: Allow override with port??? And does Tracer support other ENV directly?
 	os.Setenv("JAEGER_SERVICE_NAME", "OTF-CLASSIFIER")
 	os.Setenv("JAEGER_SAMPLER_TYPE", "const")
 	os.Setenv("JAEGER_SAMPLER_PARAM", "1")
