@@ -1,7 +1,8 @@
 package main
 
 import (
-	"log"
+	"flag"
+	"fmt"
 	"net/http"
 	"os"
 
@@ -11,6 +12,9 @@ import (
 )
 
 func main() {
+
+	port := flag.Int("p", 1576, "port to run this server on")
+	flag.Parse()
 
 	os.Setenv("JAEGER_SERVICE_NAME", "OTF-CLASSIFIER")
 	os.Setenv("JAEGER_SAMPLER_TYPE", "const")
@@ -23,15 +27,26 @@ func main() {
 	c := jaegertracing.New(e, nil)
 	defer c.Close()
 
+	e.POST("/align", align.Align) // needs to be available as post to support json payloads
 	e.GET("/align", align.Align)
+	e.GET("/lookup", func(c echo.Context) error {
+		query := c.QueryParam("search")
+		ret, err := align.Lookup(query)
+		if err != nil {
+			return c.String(http.StatusNotFound, err.Error())
+		}
+		return c.JSON(http.StatusOK, ret)
+	})
 	e.GET("/index", func(c echo.Context) error {
 		query := c.QueryParam("search")
 		ret, err := align.Search(query)
 		if err != nil {
 			return err
 		}
-		return c.String(http.StatusOK, string(ret))
+		return c.JSON(http.StatusOK, ret)
 	})
-	log.Println("Editor: localhost:1576")
-	e.Logger.Fatal(e.Start(":1576"))
+
+	// log.Println("Editor: localhost:1576")
+	address := fmt.Sprintf(":%d", *port)
+	e.Logger.Fatal(e.Start(address))
 }

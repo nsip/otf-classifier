@@ -1,7 +1,9 @@
-= lpofai_classifier
+= otf-classifier
 Web service to align free text to the learning progressions text as document classification
 
 NOTE: This is experimental and proof-of-concept code
+
+NOTE: Project has moved to go modules, remember to export GO111MODULE=on for go get and go build if you are working without module support as default.
 
 This code is based on https://github.com/nsip/curriculum-align[]. It puts in place a document classifier
 (https://en.wikipedia.org/wiki/Tf–idf[]) to classify arbitrary text as aligning to the learning progressions
@@ -28,6 +30,12 @@ For example:
 ----
 http://localhost:1576/align?area=Numeracy&text=information
 ----
+
+For larger payloads or automated environments calling the classifier, an equivalent POST method is also avialable which will accept a JSON payload:
+[source,console]
+-----
+curl http://localhost:1576/align -H 'Content-Type: application/json' -d'{"area":"literacy","text":"confident sentences"}'
+-----
 
 The response is a JSON list of structs, one for each curriculum standard that the service is configured for, with the following fields:
 
@@ -99,6 +107,14 @@ the web service `index`:
 GET http://localhost:1576/index?search=word
 ----
 
+The `Path` lookup of an indicator or progression level code or URI can be queried through the web service
+`lookup`:
+
+[source,console]
+----
+GET http://localhost:1576/lookup?search=UGP3
+----
+
 To use embedded in other labstack.echo webservers, replicate the `cmd/main.go` main() code:
 
 [source,console]
@@ -106,6 +122,15 @@ To use embedded in other labstack.echo webservers, replicate the `cmd/main.go` m
 align.Init()
 e := echo.New()
 e.GET("/align", align.Align)
+e.GET("/lookup", func(c echo.Context) error {
+                query := c.QueryParam("search")
+                ret, err := align.Lookup(query)
+                if err != nil {
+                        return err
+                } else {
+                        return c.String(http.StatusOK, string(ret))
+                }
+        })
 e.GET("/index", func(c echo.Context) error {
                 query := c.QueryParam("search")
                 ret, err := align.Search(query)

@@ -10,18 +10,18 @@ do_build() {
         rm -rf $OUTPUT
 	mkdir -p $OUTPUT
 	cd $CWD
-        go get
-	cd ./cmd
+    go get
+	cd ./cmd/otf-classifier
 	go get
 	CGO_ENABLED=0 GOOS="$GOOS" GOARCH="$GOARCH" go build -ldflags="$LDFLAGS" -o $OUTPUT/$HARNESS
 	cd ..
-	rsync -a cmd/curricula $OUTPUT/
+	rsync -a otf-classifier/curricula $OUTPUT/
 }
 
 do_zip() {
 	cd $OUTPUT
         cd ..
-	zip -qr ../$ZIP lpofai_classifier
+	zip -qr ../$ZIP otf-classifier
 	cd $CWD
 }
 
@@ -31,9 +31,9 @@ build_mac64() {
 	GOOS=darwin
 	GOARCH=amd64
 	LDFLAGS="-s -w"
-	OUTPUT=$CWD/build/Mac/lpofai_classifier
-	HARNESS=lpofai_classifier
-	ZIP=lpofai_classifier-Mac.zip
+	OUTPUT=$CWD/build/Mac/otf-classifier
+	HARNESS=otf-classifier
+	ZIP=otf-classifier-Mac.zip
 	do_build
 	#do_upx
 	# do_shells
@@ -48,8 +48,8 @@ build_windows64() {
 	GOOS=windows
 	GOARCH=amd64
 	LDFLAGS="-s -w"
-	OUTPUT=$CWD/build/Win64/lpofai_classifier
-	HARNESS=lpofai_classifier.exe
+	OUTPUT=$CWD/build/Win64/otf-classifier
+	HARNESS=otf-classifier.exe
 	ZIP=curriculum-align-Win64.zip
 	do_build
 	#do_upx
@@ -59,15 +59,15 @@ build_windows64() {
 }
 
 build_windows32() {
-	# WINDOWS 32
+	# WINDOfmt.WS 32
 	echo "Building Windows32 binaries..."
 	GOOS=windows
 	GOARCH=386
 	LDFLAGS="-s -w"
-	OUTPUT=$CWD/build/Win32/lpofai_classifier
+	OUTPUT=$CWD/build/Win32/otf-classifier
 	# GNATS=nats-streaming-server.exe
-	HARNESS=lpofai_classifier.exe
-	ZIP=lpofai_classifier-Win32.zip
+	HARNESS=otf-classifier.exe
+	ZIP=otf-classifier-Win32.zip
 	do_build
 	#do_upx
 	# do_bats
@@ -81,10 +81,10 @@ build_linux64() {
 	GOOS=linux
 	GOARCH=amd64
 	LDFLAGS="-s -w"
-	OUTPUT=$CWD/build/Linux64/lpofai_classifier
+	OUTPUT=$CWD/build/Linux64/otf-classifier
 	# GNATS=nats-streaming-server
-	HARNESS=lpofai_classifier
-	ZIP=lpofai_classifier-Linux64.zip
+	HARNESS=otf-classifier
+	ZIP=otf-classifier-Linux64.zip
 	do_build
 	#do_goupx
 	# do_shells
@@ -98,10 +98,10 @@ build_linux32() {
 	GOOS=linux
 	GOARCH=386
 	LDFLAGS="-s -w"
-	OUTPUT=$CWD/build/Linux32/lpofai_classifier
+	OUTPUT=$CWD/build/Linux32/otf-classifier
 	# GNATS=nats-streaming-server
-	HARNESS=lpofai_classifier
-	ZIP=lpofai_classifier-Linux32.zip
+	HARNESS=otf-classifier
+	ZIP=otf-classifier-Linux32.zip
 	do_build
 	#do_goupx
 	# do_shells
