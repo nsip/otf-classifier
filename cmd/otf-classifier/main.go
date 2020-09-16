@@ -15,6 +15,7 @@ func main() {
 
     // TODO: Support ENV port
 	port := flag.Int("port", 1576, "port to run this server on")
+	configPath := flag.String("config", "./curricula", "Path to config files")
 	flag.Parse()
 
     // TODO: Allow override with port??? And does Tracer support other ENV directly?
@@ -22,7 +23,7 @@ func main() {
 	os.Setenv("JAEGER_SAMPLER_TYPE", "const")
 	os.Setenv("JAEGER_SAMPLER_PARAM", "1")
 
-	align.Init()
+	align.Init(configPath)
 	e := echo.New()
 
 	// Add Jaeger Tracer into Middleware
