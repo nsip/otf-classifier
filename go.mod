@@ -15,10 +15,10 @@ require (
 	github.com/golang/protobuf v1.4.2 // indirect
 	github.com/grokify/html-strip-tags-go v0.0.0-20200322061010-ea0c1cf2f119
 	github.com/jmhodges/levigo v1.0.0 // indirect
+	github.com/jnovack/flag v1.15.0
 	github.com/labstack/echo-contrib v0.9.0
 	github.com/labstack/echo/v4 v4.1.16
 	github.com/mitchellh/copystructure v1.0.0
-	github.com/namsral/flag v1.7.4-pre
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20200410134404-eec4a21b6bb0 // indirect
 	github.com/tecbot/gorocksdb v0.0.0-20191217155057-f0fad39f321c // indirect

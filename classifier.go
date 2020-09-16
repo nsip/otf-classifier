@@ -91,13 +91,13 @@ func classify_text(classif ClassifierType, curriculum_map map[string]*CurricCont
 	return response[:5]
 }
 
-func Init(String configPath) {
+func Init(curriculaPath string) {
 	var err error
 	if err = InitTokeniser(); err != nil {
 		log.Fatalln(err)
 	}
 	classifiers = make(map[string]ClassifierType)
-	curriculum, err = read_curriculum(configPath)
+	curriculum, err = read_curriculum(curriculaPath)
 	if err != nil {
 		log.Fatalln(err)
 	}

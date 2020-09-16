@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/namsral/flag"
+	"github.com/jnovack/flag"
 	"fmt"
 	"net/http"
 	"os"
@@ -12,10 +12,11 @@ import (
 )
 
 func main() {
-
-    // TODO: Support ENV port
-	port := flag.Int("port", 1576, "port to run this server on")
-	configPath := flag.String("config", "./curricula", "Path to config files")
+    var port int
+    var curriculaPath string
+	flag.IntVar(&port, "port", 1576, "port to run this server on")
+    // flag.StringVar(&name, "name", "", "help message")
+	flag.StringVar(&curriculaPath, "curriculapath", "./curricula", "Path to curricula files")
 	flag.Parse()
 
     // TODO: Allow override with port??? And does Tracer support other ENV directly?
@@ -23,7 +24,7 @@ func main() {
 	os.Setenv("JAEGER_SAMPLER_TYPE", "const")
 	os.Setenv("JAEGER_SAMPLER_PARAM", "1")
 
-	align.Init(configPath)
+	align.Init(curriculaPath)
 	e := echo.New()
 
 	// Add Jaeger Tracer into Middleware
@@ -50,6 +51,6 @@ func main() {
 	})
 
 	// log.Println("Editor: localhost:1576")
-	address := fmt.Sprintf(":%d", *port)
+	address := fmt.Sprintf(":%d", port)
 	e.Logger.Fatal(e.Start(address))
 }
