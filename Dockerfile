@@ -48,7 +48,6 @@ RUN go build -o /build/app
 FROM alpine
 COPY --from=builder /build/app /app
 # JSON Config (hard coded for now)
-COPY --from=builder /build/cmd/otf-classifier/curricula .
+COPY --from=builder /build/cmd/otf-classifier/curricula/* /curricula/
 # NOTE - make sure it is the last build that still copies the files
-WORKDIR /
-ENTRYPOINT ["./app", "--config=/curricula"]
+ENTRYPOINT ["./app", "--curriculapath=/curricula"]

@@ -31,7 +31,7 @@ func read_curriculum(path string) (Curriculum, error) {
 	var r map[string]interface{}
 	files, _ := filepath.Glob(path + "/*.json")
 	if len(files) == 0 {
-		log.Fatalln("No *.json curriculum files found in input folder" + path)
+		log.Fatalln("No *.json curriculum files found in input folder = " + path)
 	}
 
 	ret := make(map[string]map[string]map[string]*CurricContent)

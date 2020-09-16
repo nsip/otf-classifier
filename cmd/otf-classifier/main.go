@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/labstack/echo-contrib/jaegertracing"
+	"github.com/labstack/echo-contrib/prometheus"
 	"github.com/labstack/echo/v4"
 	align "github.com/nsip/otf-classifier"
 )
@@ -30,6 +31,10 @@ func main() {
 	// Add Jaeger Tracer into Middleware
 	c := jaegertracing.New(e, nil)
 	defer c.Close()
+
+    // Enable metrics middleware
+    p := prometheus.NewPrometheus("echo", nil)
+    p.Use(e)
 
 	e.POST("/align", align.Align) // needs to be available as post to support json payloads
 	e.GET("/align", align.Align)
