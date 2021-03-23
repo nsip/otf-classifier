@@ -114,6 +114,10 @@ build_linux32() {
 
 # go mod init github.com/nsip/otf-classifier
 
+cd cmd
+go build
+cd ..
+
 if [ "$1" = "L32" ]
 then
     build_linux32
