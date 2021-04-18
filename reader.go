@@ -3,15 +3,13 @@ package otfclassifier
 import (
 	"encoding/json"
 	"errors"
-
-	"io/ioutil"
 	"log"
+	"os"
 	"path/filepath"
 	"strings"
 
-	"github.com/mitchellh/copystructure"
-
 	strip "github.com/grokify/html-strip-tags-go"
+	"github.com/mitchellh/copystructure"
 )
 
 /* Learning Area; Indicator vs DevLevel; Indicator/DevLevel => { Text; DevLevel } */
@@ -36,7 +34,7 @@ func read_curriculum(path string) (Curriculum, error) {
 
 	ret := make(map[string]map[string]map[string]*CurricContent)
 	for _, filename := range files {
-		dat, err := ioutil.ReadFile(filename)
+		dat, err := os.ReadFile(filename)
 		if err != nil {
 			return ret, err
 		}
