@@ -12,7 +12,6 @@ require (
 	github.com/facebookgo/stack v0.0.0-20160209184415-751773369052 // indirect
 	github.com/facebookgo/subset v0.0.0-20200203212716-c811ad88dec4 // indirect
 	github.com/glycerine/go-unsnap-stream v0.0.0-20190901134440-81cf024a9e0a // indirect
-	github.com/golang/protobuf v1.4.2 // indirect
 	github.com/grokify/html-strip-tags-go v0.0.0-20200322061010-ea0c1cf2f119
 	github.com/jmhodges/levigo v1.0.0 // indirect
 	github.com/labstack/echo-contrib v0.9.0
@@ -24,6 +23,6 @@ require (
 	github.com/tinylib/msgp v1.1.2 // indirect
 	github.com/uber/jaeger-client-go v2.24.0+incompatible // indirect
 	go.uber.org/atomic v1.6.0 // indirect
-	google.golang.org/protobuf v1.24.0 // indirect
+	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/fatih/set.v0 v0.2.1
 )
